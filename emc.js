@@ -9,7 +9,7 @@ const targetPartOnEventType = String.raw `${targetPart} on (?<localEventType>.*)
 /**
  * @type {Array<[string, string]>}
  */
-const dssArrayKeys = [['targetPart', 'remoteSpecifiers']];
+const dssKeys = [['targetPart', 'remoteSpecifier']];
 
 /**
  * @type {Partial<EMC<any, AP>>}
@@ -25,12 +25,12 @@ export const emc = {
                     {
                         regExp: targetPartOnEventType,
                         defaultVals: {},
-                        dssArrayKeys,
+                        dssKeys,
                     },
                     {
                         regExp: targetPart,
                         defaultVals: {},
-                        dssArrayKeys,
+                        dssKeys,
                     }
                 ]
             }
@@ -42,3 +42,6 @@ export const emc = {
         return DoToggle;
     }
 }
+
+const mose = seed(emc);
+MountObserver.synthesize(document, BeHive, mose);
