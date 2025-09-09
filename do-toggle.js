@@ -38,21 +38,24 @@ class DoToggle extends BE {
     async hydrate(self){
         const { parsedStatements, enhancedElement } = self;
         const { nudge } = await import('trans-render/lib/nudge.js');
+        /** @type Set<string> */
+        const alreadyAdded = new Set();
         for (const parsedStatement of parsedStatements) {
             let { localEventType } = parsedStatement;
             if (localEventType === undefined) {
                 const { stdEvt } = await import('trans-render/asmr/stdEvt.js');
                 localEventType = stdEvt(enhancedElement);
             }
-            
+            if(alreadyAdded.has(localEventType)) continue;
             enhancedElement.addEventListener(localEventType, this);
+            alreadyAdded.add(localEventType);
         }
         nudge(enhancedElement);
         return /** @type {PAP} */({
             resolved: true,
         });
     }
-    /** @type {Map<Specifier, WeakRef<EventTarget>} */
+    /** @type {Map<Specifier, WeakRef<EventTarget>>} */
     #cache = new Map();
     async handleEvent(){
         const self = /** @type {BAP & BEAllProps} */ (/** @type {any} */ (this));
