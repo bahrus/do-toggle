@@ -1,6 +1,6 @@
 {
   "name": "do-toggle",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "toggle a host or peer element prop",
   "homepage": "https://github.com/bahrus/do-toggle#readme",
   "bugs": {
@@ -21,7 +21,7 @@
     "safari": "npx playwright wk http://localhost:8000",
     "update": "ncu -u && npm install"
   },
-    "dependencies": {
+  "dependencies": {
     "be-enhanced": "0.0.186",
     "be-hive": "0.0.265",
     "mount-observer": "0.0.98",
