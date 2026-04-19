@@ -16,21 +16,22 @@
   "main": "do-toggle.js",
   "module": "do-toggle.js",
   "scripts": {
-    "serve": "python3 ./node_modules/ssi-server/ssi_server.py",
+    "build": "node emc.mjs > emc.json && node ⏻.mjs > ⏻.json",
+    "serve": "node ./node_modules/spa-ssi/serve.js",
     "test": "playwright test",
     "safari": "npx playwright wk http://localhost:8000",
     "update": "ncu -u && npm install"
   },
   "dependencies": {
-    "be-enhanced": "0.0.186",
-    "be-hive": "0.0.265",
-    "mount-observer": "0.0.99",
-    "trans-render": "0.0.950"
+    "be-hive": "0.1.13",
+    "mount-observer": "0.1.31",
+    "roundabout-lib": "0.0.7",
+    "nested-regex-groups": "0.0.6"
   },
   "devDependencies": {
-    "ssi-server": "0.0.1",
-    "@playwright/test": "1.55.0",
-    "xtal-element": "0.0.631",
+    "ssi-server": "0.0.7",
+    "@playwright/test": "1.59.1",
+    "xtal-element": "0.0.637",
     "be-methodical": "0.0.2"
   }
 }
