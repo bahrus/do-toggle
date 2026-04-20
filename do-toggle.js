@@ -53,11 +53,11 @@ class DoToggle {
      */
     async hydrate(self){
         const { parsedStatements, enhancedElement } = self;
+        console.log({parsedStatements})
         const {success, statements} = parsedStatements;
         if(!success) throw 400;
         const { nudge } = await import('mount-observer/nudge.js');
         /** @type Set<string> */
-        const alreadyAdded = new Set();
         for (const statement of statements) {
             const {value} = statement;
             if(!value) continue;
@@ -71,11 +71,9 @@ class DoToggle {
                     localEventType = 'click';
                 }
             }
-            if(alreadyAdded.has(localEventType)) continue;
             enhancedElement.addEventListener(localEventType, e => {
                 self.handleEvent(self, e, value);
             });
-            alreadyAdded.add(localEventType);
         }
         nudge(enhancedElement);
         return /** @type {PAP} */({

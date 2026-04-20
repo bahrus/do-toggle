@@ -1,35 +1,23 @@
 {
     "enhConfig": {
-        "enhKey": "DoToggle",
+        "enhKey": "doToggle",
         "spawn": "do-toggle/do-toggle.js",
         "withAttrs": {
             "base": "do-toggle",
             "_base": {
                 "mapsTo": "parsedStatements",
-                "parser": "parse-pattern-statements",
+                "parser": "parse-grouped-capture-statements",
                 "instanceOf": "Array",
                 "parserConfig": [
                     {
-                        "name": "targetPartOnEventType",
-                        "pattern": "^(?<remoteSpecifier.targetPart>.*) on (?<localEventType>.*)",
-                        "description": "Target selector with explicit event type",
-                        "dssKeys": [
-                            [
-                                "remoteSpecifier.targetPart",
-                                "remoteSpecifier"
-                            ]
-                        ]
+                        "name": "propOnEventType",
+                        "pattern": "^(?<prop>.*) on (?<localEventType>.*)",
+                        "description": "Prop with explicit event type"
                     },
                     {
-                        "name": "targetPart",
-                        "pattern": "^(?<remoteSpecifier.targetPart>.*)",
-                        "description": "Target selector with default event",
-                        "dssKeys": [
-                            [
-                                "remoteSpecifier.targetPart",
-                                "remoteSpecifier"
-                            ]
-                        ]
+                        "name": "prop",
+                        "pattern": "^(?<prop>.*)",
+                        "description": "Prop with default event"
                     }
                 ]
             }

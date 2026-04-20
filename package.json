@@ -29,7 +29,7 @@
     "nested-regex-groups": "0.0.6"
   },
   "devDependencies": {
-    "ssi-server": "0.0.7",
+    "spa-ssi": "0.0.27",
     "@playwright/test": "1.59.1",
     "xtal-element": "0.0.637",
     "be-methodical": "0.0.2"

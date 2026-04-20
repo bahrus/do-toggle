@@ -8,16 +8,14 @@
 /** @type {PatternConfig[]} */
 const parsePatterns = [
     {
-        name: 'targetPartOnEventType',
-        pattern: String.raw `^(?<remoteSpecifier.targetPart>.*) on (?<localEventType>.*)`,
-        description: 'Target selector with explicit event type',
-        dssKeys: [['remoteSpecifier.targetPart', 'remoteSpecifier']]
+        name: 'propOnEventType',
+        pattern: String.raw `^(?<prop>.*) on (?<localEventType>.*)`,
+        description: 'Prop with explicit event type',
     },
     {
-        name: 'targetPart',
-        pattern: String.raw `^(?<remoteSpecifier.targetPart>.*)`,
-        description: 'Target selector with default event',
-        dssKeys: [['remoteSpecifier.targetPart', 'remoteSpecifier']]
+        name: 'prop',
+        pattern: String.raw `^(?<prop>.*)`,
+        description: 'Prop with default event',
     }
 ];
 
@@ -26,13 +24,13 @@ const parsePatterns = [
  */
 export const emc = {
     enhConfig: {
-        enhKey: 'DoToggle',
+        enhKey: 'doToggle',
         spawn: 'do-toggle/do-toggle.js',
         withAttrs: {
             base: 'do-toggle',
             _base: {
                 mapsTo: 'parsedStatements',
-                parser: 'parse-pattern-statements',
+                parser: 'parse-grouped-capture-statements',
                 instanceOf: 'Array',
                 parserConfig: parsePatterns
             }
