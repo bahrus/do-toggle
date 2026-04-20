@@ -91,44 +91,48 @@ class DoToggle {
      */
     async handleEvent(self, e, parsedStatement){
         const { enhancedElement } = self;
-        const {remoteSpecifier} = parsedStatement;
+        let {prop} = parsedStatement;
+
+        const host = /** @type {any} */ (await (await import('assign-gingerly/getHost.js')).getHost(enhancedElement));
+
+        if(!host) throw 404;
+
+        host[prop] = !host[prop];
         
-        // Simple DSS implementation - find element by selector
-        const cacheKey = JSON.stringify(remoteSpecifier);
-        let remoteTarget = this.#cache.get(cacheKey)?.deref();
+        // // Simple DSS implementation - find element by selector
         
-        if (remoteTarget === undefined) {
-            const {selector} = remoteSpecifier;
-            if(!selector) throw 404;
+        // if (remoteTarget === undefined) {
+        //     const {selector} = remoteSpecifier;
+        //     if(!selector) throw 404;
             
-            // Search in closest itemscope, shadow root, or document
-            const rn = /** @type {DocumentFragment & {host: unknown}} */ (enhancedElement.getRootNode());
-            const searchRoot = enhancedElement.closest('[itemscope]') || rn;
+        //     // Search in closest itemscope, shadow root, or document
+        //     const rn = /** @type {DocumentFragment & {host: unknown}} */ (enhancedElement.getRootNode());
+        //     const searchRoot = enhancedElement.closest('[itemscope]') || rn;
             
-            const found = /** @type {Element | null} */ (searchRoot.querySelector ? searchRoot.querySelector(selector) : null);
-            if (!found) throw 404;
+        //     const found = /** @type {Element | null} */ (searchRoot.querySelector ? searchRoot.querySelector(selector) : null);
+        //     if (!found) throw 404;
             
-            remoteTarget = found;
-            this.#cache.set(cacheKey, new WeakRef(remoteTarget));
-        }
+        //     remoteTarget = found;
+        //     this.#cache.set(cacheKey, new WeakRef(remoteTarget));
+        // }
         
-        let {prop} = remoteSpecifier;
-        if(prop === undefined){
-            // Default to 'checked' for checkboxes, 'value' for inputs, or first itemprop
-            const tagName = remoteTarget.tagName.toLowerCase();
-            if(tagName === 'input'){
-                const inputType = remoteTarget.getAttribute('type');
-                prop = (inputType === 'checkbox' || inputType === 'radio') ? 'checked' : 'value';
-            } else {
-                // Try to find itemprop attribute
-                prop = remoteTarget.getAttribute('itemprop') || 'textContent';
-            }
-            remoteSpecifier.prop = prop;
-        }
+        // let {prop} = remoteSpecifier;
+        // if(prop === undefined){
+        //     // Default to 'checked' for checkboxes, 'value' for inputs, or first itemprop
+        //     const tagName = remoteTarget.tagName.toLowerCase();
+        //     if(tagName === 'input'){
+        //         const inputType = remoteTarget.getAttribute('type');
+        //         prop = (inputType === 'checkbox' || inputType === 'radio') ? 'checked' : 'value';
+        //     } else {
+        //         // Try to find itemprop attribute
+        //         prop = remoteTarget.getAttribute('itemprop') || 'textContent';
+        //     }
+        //     remoteSpecifier.prop = prop;
+        // }
         
-        /** @type {any} */
-        const target = remoteTarget;
-        target[prop] = !target[prop];
+        // /** @type {any} */
+        // const target = remoteTarget;
+        // target[prop] = !target[prop];
     }
 }
 

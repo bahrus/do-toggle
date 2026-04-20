@@ -23,6 +23,7 @@
     "update": "ncu -u && npm install"
   },
   "dependencies": {
+    "assign-gingerly": "0.0.29",
     "be-hive": "0.1.13",
     "mount-observer": "0.1.31",
     "roundabout-lib": "0.0.7",
