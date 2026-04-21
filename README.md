@@ -63,13 +63,15 @@ Toggle a property on a specific element using a CSS selector:
 ```html
 <div itemscope>
     <light-switch id=myLight></light-switch>
-    <button ⏻="[#myLight].isOn">Toggle Light</button>
+    <button ⏻="[#myLight]?.isOn">Toggle Light</button>
 </div>
 ```
 
-The syntax `[selector].propertyName` allows you to:
+The syntax `[selector]?.propertyName` allows you to:
 - `[selector]` - Find an element using a CSS selector
-- `.propertyName` - Toggle the specified property on that element
+- `?.propertyName` - Toggle the specified property on that element
+
+**Note:** Use `?.` (chained accessor) instead of `.` because simple periods are used to split multiple statements in the attribute value.
 
 ## Example 1d - Toggle Checkbox
 
@@ -111,8 +113,10 @@ Works seamlessly with xtal-element for reactive UI updates:
 do-toggle="propertyName"                    // Toggle host property
 do-toggle="propertyName on eventType"       // Toggle on specific event
 do-toggle="[selector]"                      // Toggle inferred property on selected element
-do-toggle="[selector].propertyName"         // Toggle specific property on selected element
+do-toggle="[selector]?.propertyName"        // Toggle specific property on selected element
 ```
+
+**Important:** Use `?.` (chained accessor) instead of `.` when specifying properties on selected elements, because simple periods are used to split multiple statements.
 
 Or use the emoji shorthand `⏻` instead of `do-toggle`.
 

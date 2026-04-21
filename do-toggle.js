@@ -106,11 +106,43 @@ class DoToggle {
         const { enhancedElement } = self;
         let {prop} = parsedStatement;
 
-        const host = /** @type {any} */ (await (await import('assign-gingerly/getHost.js')).getHost(enhancedElement));
+        // Check if prop contains a selector pattern: [selector] or [selector]?.property
+        // Using ?. (chained accessor) because simple . is used to split statements
+        const selectorMatch = prop.match(/^\[(.+?)\](?:\?\.(.+))?$/);
+        
+        let target;
+        let propertyName;
+        
+        if(selectorMatch){
+            // Has selector: [selector] or [selector]?.property
+            const selector = selectorMatch[1];
+            propertyName = selectorMatch[2]; // May be undefined
+            
+            // Find the target element using the selector
+            const rn = /** @type {DocumentFragment & {host: unknown}} */ (enhancedElement.getRootNode());
+            const searchRoot = enhancedElement.closest('[itemscope]') || rn;
+            target = /** @type {any} */ (searchRoot.querySelector ? searchRoot.querySelector(selector) : null);
+            
+            if(!target) throw 404;
+            
+            // If no property specified, infer it
+            if(!propertyName){
+                const tagName = target.tagName.toLowerCase();
+                if(tagName === 'input'){
+                    const inputType = target.getAttribute('type');
+                    propertyName = (inputType === 'checkbox' || inputType === 'radio') ? 'checked' : 'value';
+                } else {
+                    propertyName = 'textContent';
+                }
+            }
+        } else {
+            // No selector - toggle property on host
+            propertyName = prop;
+            target = /** @type {any} */ (await (await import('assign-gingerly/getHost.js')).getHost(enhancedElement));
+            if(!target) throw 404;
+        }
 
-        if(!host) throw 404;
-
-        host[prop] = !host[prop];
+        target[propertyName] = !target[propertyName];
     }
 }
 
