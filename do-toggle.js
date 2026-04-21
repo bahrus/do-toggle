@@ -53,11 +53,27 @@ class DoToggle {
      */
     async hydrate(self){
         const { parsedStatements, enhancedElement } = self;
-        console.log({parsedStatements})
         const {success, statements} = parsedStatements;
         if(!success) throw 400;
         const { nudge } = await import('mount-observer/nudge.js');
+        
+        // If no statements, try to infer from name attribute
+        if(statements.length === 0){
+            const name = enhancedElement.getAttribute('name');
+            if(name){
+                statements.push({
+                    value: {
+                        remoteSpecifier: {
+                            targetPart: name
+                        },
+                        localEventType: 'click'
+                    }
+                });
+            }
+        }
+        
         /** @type Set<string> */
+        const alreadyAdded = new Set();
         for (const statement of statements) {
             const {value} = statement;
             if(!value) continue;
@@ -71,18 +87,17 @@ class DoToggle {
                     localEventType = 'click';
                 }
             }
+            if(alreadyAdded.has(localEventType)) continue;
             enhancedElement.addEventListener(localEventType, e => {
                 self.handleEvent(self, e, value);
             });
+            alreadyAdded.add(localEventType);
         }
         nudge(enhancedElement);
         return /** @type {PAP} */({
             resolved: true,
         });
     }
-
-    /** @type {Map<string, WeakRef<Element>>} */
-    #cache = new Map();
 
     /**
      * @param {AP} self 
@@ -98,41 +113,6 @@ class DoToggle {
         if(!host) throw 404;
 
         host[prop] = !host[prop];
-        
-        // // Simple DSS implementation - find element by selector
-        
-        // if (remoteTarget === undefined) {
-        //     const {selector} = remoteSpecifier;
-        //     if(!selector) throw 404;
-            
-        //     // Search in closest itemscope, shadow root, or document
-        //     const rn = /** @type {DocumentFragment & {host: unknown}} */ (enhancedElement.getRootNode());
-        //     const searchRoot = enhancedElement.closest('[itemscope]') || rn;
-            
-        //     const found = /** @type {Element | null} */ (searchRoot.querySelector ? searchRoot.querySelector(selector) : null);
-        //     if (!found) throw 404;
-            
-        //     remoteTarget = found;
-        //     this.#cache.set(cacheKey, new WeakRef(remoteTarget));
-        // }
-        
-        // let {prop} = remoteSpecifier;
-        // if(prop === undefined){
-        //     // Default to 'checked' for checkboxes, 'value' for inputs, or first itemprop
-        //     const tagName = remoteTarget.tagName.toLowerCase();
-        //     if(tagName === 'input'){
-        //         const inputType = remoteTarget.getAttribute('type');
-        //         prop = (inputType === 'checkbox' || inputType === 'radio') ? 'checked' : 'value';
-        //     } else {
-        //         // Try to find itemprop attribute
-        //         prop = remoteTarget.getAttribute('itemprop') || 'textContent';
-        //     }
-        //     remoteSpecifier.prop = prop;
-        // }
-        
-        // /** @type {any} */
-        // const target = remoteTarget;
-        // target[prop] = !target[prop];
     }
 }
 

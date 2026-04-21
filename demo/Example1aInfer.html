@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Example 1a Infer - Infer property from name attribute</title>
+    <!-- #include virtual="/imports.html" -->
+    <be-hive>
+        <script type=emc-parser 
+                src="be-hive/parsers/parse-grouped-capture-statements.js" 
+                parser-name=parse-grouped-capture-statements></script>
+        <script type=emc 
+                src="do-toggle/⏻.json" 
+                wait-for-parsers=parse-grouped-capture-statements></script>
+    </be-hive>
+    <script type=module>
+        import 'be-hive/be-hive.js';
+        class MoodStone extends HTMLElement{
+            connectedCallback(){
+                this.isHappy = true;
+            }
+        }
+        customElements.define('mood-stone', MoodStone);
+    </script>
+</head>
+<body>
+    <mood-stone itemscope>
+        <div>
+            Is Happy: <span id=display></span>
+        </div>
+        <button disabled name=isHappy ⏻>Toggle Mood</button>
+        <script>
+            const moodStone = document.querySelector('mood-stone');
+            const display = document.getElementById('display');
+            function updateDisplay(){
+                display.textContent = moodStone.isHappy ? '😊' : '😢';
+            }
+            updateDisplay();
+            // Watch for changes
+            setInterval(updateDisplay, 100);
+        </script>
+    </mood-stone>
+</body>
+</html>
