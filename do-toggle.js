@@ -63,9 +63,7 @@ class DoToggle {
             if(name){
                 statements.push({
                     value: {
-                        remoteSpecifier: {
-                            targetPart: name
-                        },
+                        prop: name,
                         localEventType: 'click'
                     }
                 });
