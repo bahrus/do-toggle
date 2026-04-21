@@ -22,5 +22,20 @@
                 ]
             }
         }
+    },
+    "customData": {
+        "weakRef": {
+            "properties": [
+                "enhancedElement"
+            ]
+        },
+        "actions": {
+            "hydrate": {
+                "ifAllOf": [
+                    "parsedStatements",
+                    "enhancedElement"
+                ]
+            }
+        }
     }
 }

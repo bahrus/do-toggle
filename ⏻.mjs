@@ -14,7 +14,8 @@ const emc = {
             ...myJSON.enhConfig.withAttrs,
             base: '⏻'
         }
-    }
+    },
+    customData: myJSON.customData
 }
 
 export function render(){
