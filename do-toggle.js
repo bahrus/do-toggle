@@ -28,11 +28,7 @@ class DoToggle {
         actions.init(this, enhancedElement, initVals);
     }
 
-    /**
-     * 
-     * @param {Element & ElementEnhancementGateway} from 
-     */
-    async infer(from){return /** @type {ElementInfer} */ (/** @type {any} */ (from.enh.get((await import('assign-gingerly/Infer.js')).registryItem)));}
+    
 
     /**
      * @param {AllProps} self 
@@ -69,7 +65,7 @@ class DoToggle {
             statements.push({
                 value: {
                     prop: name,
-                    localEventType: (await self.infer(enhancedElement)).eventType,
+                    localEventType: (await infer(enhancedElement)).eventType,
                 }
             });
         }
@@ -81,7 +77,7 @@ class DoToggle {
             if(!value) continue;
             let { localEventType } = value;
             if (localEventType === undefined) {
-                localEventType = (await self.infer(enhancedElement)).eventType;
+                localEventType = (await infer(enhancedElement)).eventType;
             }
             enhancedElement.addEventListener(localEventType, e => {
                 self.handleEvent(self, e, value);
@@ -130,11 +126,17 @@ class DoToggle {
         if(propertyName){
             target[propertyName] = !target[propertyName];
         }else{
-            const infer = await self.infer(target);
-            infer.value = !infer.value;
+            const inference = await infer(target);
+            inference.value = !inference.value;
         }
         
     }
 }
+
+/**
+ * 
+ * @param {Element & ElementEnhancementGateway} from 
+ */
+async function infer(from){return /** @type {ElementInfer} */ (/** @type {any} */ (from.enh.get((await import('assign-gingerly/Infer.js')).registryItem)));}
 
 export {DoToggle}
