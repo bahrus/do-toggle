@@ -70,25 +70,26 @@ class DoToggle {
         }
         
         /** @type Set<string> */
-        const alreadyAdded = new Set();
+        //const alreadyAdded = new Set();
         for (const statement of statements) {
             const {value} = statement;
             if(!value) continue;
             let { localEventType } = value;
             if (localEventType === undefined) {
+                localEventType = (enhancedElement.enh.get(registryItem).eventType);
                 // Default to 'click' for buttons, 'input' for inputs, etc.
-                const tagName = enhancedElement.tagName.toLowerCase();
-                if(tagName === 'input' || tagName === 'textarea' || tagName === 'select'){
-                    localEventType = 'input';
-                } else {
-                    localEventType = 'click';
-                }
+                // const tagName = enhancedElement.tagName.toLowerCase();
+                // if(tagName === 'input' || tagName === 'textarea' || tagName === 'select'){
+                //     localEventType = 'input';
+                // } else {
+                //     localEventType = 'click';
+                // }
             }
-            if(alreadyAdded.has(localEventType)) continue;
+            //if(alreadyAdded.has(localEventType)) continue;
             enhancedElement.addEventListener(localEventType, e => {
                 self.handleEvent(self, e, value);
             });
-            alreadyAdded.add(localEventType);
+            //alreadyAdded.add(localEventType);
         }
         nudge(enhancedElement);
         return /** @type {PAP} */({
