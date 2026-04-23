@@ -8,6 +8,7 @@
  * @type {EMC<any, AllProps, Element, RAConfig<AllProps, Actions>>}
  */
 import emc from './emc.json' with {type: 'json'};
+import {registryItem} from 'assign-gingerly/Infer.js';
 
 const {customData} = emc;
 
@@ -60,14 +61,12 @@ class DoToggle {
         // If no statements, try to infer from name attribute
         if(statements.length === 0){
             const name = enhancedElement.getAttribute('name');
-            if(name){
-                statements.push({
-                    value: {
-                        prop: name,
-                        localEventType: 'click'
-                    }
-                });
-            }
+            statements.push({
+                value: {
+                    prop: name,
+                    localEventType: enhancedElement.enh.get(registryItem).eventType,
+                }
+            });
         }
         
         /** @type Set<string> */
@@ -124,25 +123,19 @@ class DoToggle {
             target = /** @type {any} */ (searchRoot.querySelector ? searchRoot.querySelector(selector) : null);
             
             if(!target) throw 404;
-            
-            // If no property specified, infer it
-            if(!propertyName){
-                const tagName = target.tagName.toLowerCase();
-                if(tagName === 'input'){
-                    const inputType = target.getAttribute('type');
-                    propertyName = (inputType === 'checkbox' || inputType === 'radio') ? 'checked' : 'value';
-                } else {
-                    propertyName = 'textContent';
-                }
-            }
+        
         } else {
             // No selector - toggle property on host
             propertyName = prop;
             target = /** @type {any} */ (await (await import('assign-gingerly/getHost.js')).getHost(enhancedElement));
             if(!target) throw 404;
         }
-
-        target[propertyName] = !target[propertyName];
+        if(propertyName){
+            target[propertyName] = !target[propertyName];
+        }else{
+            target.enh.get(registryItem).value = !target.enh.get(registryItem).value;
+        }
+        
     }
 }
 
