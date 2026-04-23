@@ -32,10 +32,7 @@ class DoToggle {
      * 
      * @param {Element & ElementEnhancementGateway} from 
      */
-    async infer(from){
-        const {registryItem} = await import('assign-gingerly/Infer.js');
-        return /** @type {ElementInfer} */ (/** @type {any} */ (from.enh.get(registryItem)));
-    }
+    async infer(from){return /** @type {ElementInfer} */ (/** @type {any} */ (from.enh.get((await import('assign-gingerly/Infer.js')).registryItem)));}
 
     /**
      * @param {AllProps} self 
