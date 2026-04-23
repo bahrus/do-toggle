@@ -1,14 +1,13 @@
 // @ts-check
 /** @import {Actions, PAP, AllProps, AP, TogglingParameters, Specifier} from './types/do-toggle/types' */;
 /** @import {RoundaboutOptions} from './types/roundabout/types' */;
-/** @import {ElementEnhancementGateway} from './types/assign-gingerly/types' */;
+/** @import {ElementEnhancementGateway, ElementInfer} from './types/assign-gingerly/types' */;
 /** @import {EMC} from './types/mount-observer/types' */;
 /** @import {RAConfig} from './types/roundabout/types' */;
 /**
  * @type {EMC<any, AllProps, Element, RAConfig<AllProps, Actions>>}
  */
 import emc from './emc.json' with {type: 'json'};
-import {registryItem} from 'assign-gingerly/Infer.js';
 
 const {customData} = emc;
 
@@ -27,6 +26,15 @@ class DoToggle {
         /** @type {Actions} */
         const actions = /** @type {any} */(this);
         actions.init(this, enhancedElement, initVals);
+    }
+
+    /**
+     * 
+     * @param {Element & ElementEnhancementGateway} from 
+     */
+    async infer(from){
+        const {registryItem} = await import('assign-gingerly/Infer.js');
+        return /** @type {ElementInfer} */ (/** @type {any} */ (from.enh.get(registryItem)));
     }
 
     /**
@@ -64,7 +72,7 @@ class DoToggle {
             statements.push({
                 value: {
                     prop: name,
-                    localEventType: enhancedElement.enh.get(registryItem).eventType,
+                    localEventType: (await self.infer(enhancedElement)).eventType,
                 }
             });
         }
@@ -76,20 +84,11 @@ class DoToggle {
             if(!value) continue;
             let { localEventType } = value;
             if (localEventType === undefined) {
-                localEventType = (enhancedElement.enh.get(registryItem).eventType);
-                // Default to 'click' for buttons, 'input' for inputs, etc.
-                // const tagName = enhancedElement.tagName.toLowerCase();
-                // if(tagName === 'input' || tagName === 'textarea' || tagName === 'select'){
-                //     localEventType = 'input';
-                // } else {
-                //     localEventType = 'click';
-                // }
+                localEventType = (await self.infer(enhancedElement)).eventType;
             }
-            //if(alreadyAdded.has(localEventType)) continue;
             enhancedElement.addEventListener(localEventType, e => {
                 self.handleEvent(self, e, value);
             });
-            //alreadyAdded.add(localEventType);
         }
         nudge(enhancedElement);
         return /** @type {PAP} */({
@@ -98,7 +97,7 @@ class DoToggle {
     }
 
     /**
-     * @param {AP} self 
+     * @param {AP & Actions} self 
      * @param {Event} e 
      * @param {TogglingParameters} parsedStatement 
      */
@@ -134,7 +133,8 @@ class DoToggle {
         if(propertyName){
             target[propertyName] = !target[propertyName];
         }else{
-            target.enh.get(registryItem).value = !target.enh.get(registryItem).value;
+            const infer = await self.infer(target);
+            infer.value = !infer.value;
         }
         
     }
