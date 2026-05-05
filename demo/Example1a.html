@@ -16,6 +16,14 @@
     <script type=module>
         import 'be-hive/be-hive.js';
         class MoodStone extends HTMLElement{
+            #isHappy;
+            get isHappy(){
+                return this.#isHappy;
+            }
+            set isHappy(nv){
+                this.#isHappy = nv;
+                this.querySelector('#display').textContent = nv ? '😊' : '😢'
+            }
             connectedCallback(){
                 this.isHappy = true;
             }
