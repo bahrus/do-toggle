@@ -94,39 +94,17 @@ class DoToggle {
      */
     async handleEvent(self, e, parsedStatement){
         const { enhancedElement } = self;
-        let {prop} = parsedStatement;
-
-        // Check if prop contains a selector pattern: [selector] or [selector]?.property
-        // Using ?. (chained accessor) because simple . is used to split statements
-        const selectorMatch = prop.match(/^\[(.+?)\](?:\?\.(.+))?$/);
-        
-        let target;
-        let propertyName;
-        
-        if(selectorMatch){
-            // Has selector: [selector] or [selector]?.property
-            const selector = selectorMatch[1];
-            propertyName = selectorMatch[2]; // May be undefined
-            
-            // Find the target element using the selector
-            const rn = /** @type {DocumentFragment & {host: unknown}} */ (enhancedElement.getRootNode());
-            const searchRoot = enhancedElement.closest('[itemscope]') || rn;
-            target = /** @type {any} */ (searchRoot.querySelector ? searchRoot.querySelector(selector) : null);
-            
-            if(!target) throw 404;
-        
-        } else {
-            // No selector - toggle property on host
-            propertyName = prop;
-            target = /** @type {any} */ (await (await import('assign-gingerly/getHost.js')).getHost(enhancedElement));
-            if(!target) throw 404;
-        }
-        if(propertyName){
-            target[propertyName] = !target[propertyName];
+        const {targetSpecifier} = parsedStatement;
+        const {targetElementId, prop} = targetSpecifier;
+        const target = /** @type {any} */ (await ((await import('inferencer/upSearch.js')).upSearch(enhancedElement, targetElementId)));
+        if(prop){
+            target[prop] = !target[prop];
         }else{
             const inference = await infer(target);
             inference.value = !inference.value;
         }
+
+        
         
     }
 }
