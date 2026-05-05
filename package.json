@@ -1,6 +1,6 @@
 {
   "name": "do-toggle",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "toggle a host or peer element prop",
   "homepage": "https://github.com/bahrus/do-toggle#readme",
   "bugs": {
