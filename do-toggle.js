@@ -1,16 +1,10 @@
 // @ts-check
-/** @import {Actions, PAP, AllProps, AP, TogglingParameters, Specifier} from './types/do-toggle/types' */;
+/** @import {Actions, PAP, AllProps, AP, TogglingParameters} from './types/do-toggle/types' */;
 /** @import {RoundaboutOptions} from './types/roundabout/types' */;
-/** @import {ElementEnhancementGateway, ElementInfer} from './types/assign-gingerly/types' */;
+/** @import {ElementEnhancementGateway, SpawnContext} from './types/assign-gingerly/types' */;
 /** @import {Infer} from './types/inferencer/types' */
 /** @import {EMC} from './types/mount-observer/types' */;
 /** @import {RAConfig} from './types/roundabout/types' */;
-/**
- * @type {EMC<any, AllProps, Element, RAConfig<AllProps, Actions>>}
- */
-import emc from './emc.json' with {type: 'json'};
-
-const {customData} = emc;
 
 /**
  * @implements {Actions}
@@ -20,13 +14,13 @@ class DoToggle {
     /**
      * @this {AllProps & Actions}
      * @param {Element & ElementEnhancementGateway} enhancedElement 
-     * @param {*} ctx 
-     * @param {AllProps} initVals 
+     * @param {SpawnContext} ctx 
+     * @param {PAP} initVals 
      */
     constructor(enhancedElement, ctx, initVals){
         /** @type {Actions} */
-        const actions = /** @type {any} */(this);
-        actions.init(this, enhancedElement, initVals);
+        const actions = /** @type {any} */ (this);
+        actions.init(this, enhancedElement, ctx, initVals);
     }
 
     
@@ -34,9 +28,11 @@ class DoToggle {
     /**
      * @param {AllProps} self 
      * @param {Element & ElementEnhancementGateway} enhancedElement 
+     * @param {SpawnContext} ctx 
      * @param {PAP} initVals 
      */
-    async init(self, enhancedElement, initVals){
+    async init(self, enhancedElement, ctx, initVals){
+        const {customData} = /** @type {EMC<any, AllProps, Element, RAConfig<AllProps, Actions>>} */ (ctx.emc);
         /**
          * @type {RoundaboutOptions}
          */
@@ -45,6 +41,7 @@ class DoToggle {
             vm: self,
             initialPropVals: {
                 enhancedElement,
+                ...customData?.defaultPropVals,
                 ...initVals
             }
         };
@@ -138,6 +135,6 @@ class DoToggle {
  * 
  * @param {Element & ElementEnhancementGateway} from 
  */
-async function infer(from){return /** @type {Infer} */ (/** @type {any} */ (from.enh.get((await import('assign-gingerly/Infer.js')).registryItem)));}
+async function infer(from){return /** @type {Infer} */ (/** @type {any} */ (from.enh.get((await import('inferencer/inferencer.js')).registryItem)));}
 
 export {DoToggle}
