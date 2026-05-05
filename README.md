@@ -1,5 +1,11 @@
 # do-toggle (⏻)
 
+Windows: Hold Alt, type 23FB, release Alt UnicodePlus+1.
+
+Mac: Hold Alt ⌥, type 23FB, release Alt UnicodePlus.
+
+Linux: Hold Ctrl+Shift+U, type 23FB, release keys Unicode Explorer.
+
 Toggle a host or peer element property.
 
 [![NPM version](https://badge.fury.io/js/do-toggle.png)](http://badge.fury.io/js/do-toggle)

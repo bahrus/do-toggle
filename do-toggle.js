@@ -2,6 +2,7 @@
 /** @import {Actions, PAP, AllProps, AP, TogglingParameters, Specifier} from './types/do-toggle/types' */;
 /** @import {RoundaboutOptions} from './types/roundabout/types' */;
 /** @import {ElementEnhancementGateway, ElementInfer} from './types/assign-gingerly/types' */;
+/** @import {Infer} from './types/inferencer/types' */
 /** @import {EMC} from './types/mount-observer/types' */;
 /** @import {RAConfig} from './types/roundabout/types' */;
 /**
@@ -137,6 +138,6 @@ class DoToggle {
  * 
  * @param {Element & ElementEnhancementGateway} from 
  */
-async function infer(from){return /** @type {ElementInfer} */ (/** @type {any} */ (from.enh.get((await import('assign-gingerly/Infer.js')).registryItem)));}
+async function infer(from){return /** @type {Infer} */ (/** @type {any} */ (from.enh.get((await import('assign-gingerly/Infer.js')).registryItem)));}
 
 export {DoToggle}
