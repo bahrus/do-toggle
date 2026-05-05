@@ -17,13 +17,20 @@ Toggle a property on the host element (closest itemscope or shadow host):
 
 ```html
 <script type=module>
-    import 'be-hive/be-hive.js';
-    class MoodStone extends HTMLElement{
-        connectedCallback(){
-            this.isHappy = true;
-        }
+class MoodStone extends HTMLElement{
+    #isHappy;
+    get isHappy(){
+        return this.#isHappy;
     }
-    customElements.define('mood-stone', MoodStone);
+    set isHappy(nv){
+        this.#isHappy = nv;
+        this.querySelector('#display').textContent = nv ? '😊' : '😢'
+    }
+    connectedCallback(){
+        this.isHappy = true;
+    }
+}
+customElements.define('mood-stone', MoodStone);
 </script>
 ...
 <mood-stone itemscope>
