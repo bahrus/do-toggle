@@ -16,6 +16,14 @@
     <script type=module>
         import 'be-hive/be-hive.js';
         class MoodStone extends HTMLElement{
+            #isHappy;
+            get isHappy(){
+                return this.#isHappy;
+            }
+            set isHappy(nv){
+                this.#isHappy = nv;
+                this.querySelector('#display').textContent = nv ? '😊' : '😢'
+            }
             connectedCallback(){
                 this.isHappy = true;
             }
@@ -29,16 +37,6 @@
             Is Happy: <span id=display></span>
         </div>
         <button ⏻=isHappy>Toggle Mood</button>
-        <script>
-            const moodStone = document.querySelector('mood-stone');
-            const display = document.getElementById('display');
-            function updateDisplay(){
-                display.textContent = moodStone.isHappy ? '😊' : '😢';
-            }
-            updateDisplay();
-            // Watch for changes
-            setInterval(updateDisplay, 100);
-        </script>
     </mood-stone>
 </body>
 </html>
