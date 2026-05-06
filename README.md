@@ -16,9 +16,25 @@ Toggle a host or peer element property.
 Toggle a property on the host element (closest itemscope or shadow host):
 
 ```html
+<be-hive>
+    <script type=emc-parser 
+            src="be-hive/parsers/parse-grouped-capture-statements.js" 
+            parser-name=parse-grouped-capture-statements></script>
+    <script type=emc 
+            src="do-toggle/emc.json" 
+            wait-for-parsers=parse-grouped-capture-statements></script>
+</be-hive>
 <script type=module>
     import 'be-hive/be-hive.js';
     class MoodStone extends HTMLElement{
+        #isHappy;
+        get isHappy(){
+            return this.#isHappy;
+        }
+        set isHappy(nv){
+            this.#isHappy = nv;
+            this.querySelector('#display').textContent = nv ? '😊' : '😢'
+        }
         connectedCallback(){
             this.isHappy = true;
         }
@@ -69,7 +85,7 @@ Toggle a property on a specific element using a CSS selector:
 ```html
 <div itemscope>
     <light-switch id=myLight></light-switch>
-    <button ⏻="[#myLight]?.isOn">Toggle Light</button>
+    <button ⏻="#myLight?.isOn">Toggle Light</button>
 </div>
 ```
 
@@ -88,7 +104,7 @@ When toggling an input element without specifying a property, it automatically t
 ```html
 <div itemscope>
     <input type="checkbox" id=agreeCheckbox>
-    <button ⏻="[#agreeCheckbox]">Toggle Agreement</button>
+    <button ⏻="#agreeCheckbox">Toggle Agreement</button>
 </div>
 ```
 
