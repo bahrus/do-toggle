@@ -124,7 +124,7 @@ When toggling an input element without specifying a property, it automatically t
 ```
 do-toggle="propertyName"                    // Toggle host property
 do-toggle="propertyName on eventType"       // Toggle on specific event
-do-toggle="[selector]"                      // Toggle inferred property on selected element
+do-toggle="#targetElementId"                      // Toggle inferred property on selected element
 do-toggle="#targetElementId?.propertyName"        // Toggle specific property on selected element
 ```
 
