@@ -13,7 +13,7 @@ Toggle a host or peer element property.
 
 ## Alternatives
 
-do-merge covers most of the same ground as [do-invoke](https://github.com/bahrus/do-invoke), [do-inc](https://github.com/bahrus/do-inc), and [do-toggle](https://github.com/bahrus/do-toggle). The key differences:
+[do-merge](https://github.com/bahrus/do-invoke) covers most of the same ground as [do-invoke](https://github.com/bahrus/do-invoke), [do-inc](https://github.com/bahrus/do-inc), and [do-toggle](https://github.com/bahrus/do-toggle). The key differences:
 
 - **do-invoke**, **do-inc**, and **do-toggle** use a string DSL (no JSON required) and include inferencing logic — they can figure out the event type, target property, etc. from context, so you can often be less explicit. The intent is arguably more obvious at a glance for their specific use cases.
 - **do-merge** uses JSON syntax and the full power of [assign-gingerly](https://github.com/bahrus/assign-gingerly) operators (`=!` for toggle, `+=` for increment, method calls via `?.classList?.add`, etc.). It's more general-purpose — a single enhancement that can handle toggling, incrementing, method invocation, and arbitrary property assignment in one attribute.
@@ -146,7 +146,7 @@ Or use the emoji shorthand `⏻` instead of `do-toggle`.
 2. Fork/clone this repo
 3. Install node.js
 4. Open command window to folder where you cloned this repo
-5.  > git submodule update --init --recursive
+5. > git submodule update --init --recursive
 6. > npm install
 7. > npm run serve
 8. Open http://localhost:8000/demo/ in a modern browser
