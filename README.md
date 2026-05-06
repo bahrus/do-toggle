@@ -25,6 +25,14 @@ Choose do-merge when you need to combine multiple operations or want the full ex
 Toggle a property on the host element (closest itemscope or shadow host):
 
 ```html
+<be-hive>
+    <script type=emc-parser 
+            src="be-hive/parsers/parse-grouped-capture-statements.js" 
+            parser-name=parse-grouped-capture-statements></script>
+    <script type=emc 
+            src="do-toggle/emc.json" 
+            wait-for-parsers=parse-grouped-capture-statements></script>
+</be-hive>
 <script type=module>
 class MoodStone extends HTMLElement{
     #isHappy;
