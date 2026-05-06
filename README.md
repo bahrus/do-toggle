@@ -11,6 +11,15 @@ Toggle a host or peer element property.
 [![NPM version](https://badge.fury.io/js/do-toggle.png)](http://badge.fury.io/js/do-toggle)
 [![How big is this package in your project?](https://img.shields.io/bundlephobia/minzip/do-toggle?style=for-the-badge)](https://bundlephobia.com/result?p=do-toggle)
 
+## Alternatives
+
+do-merge covers most of the same ground as [do-invoke](https://github.com/bahrus/do-invoke), [do-inc](https://github.com/bahrus/do-inc), and [do-toggle](https://github.com/bahrus/do-toggle). The key differences:
+
+- **do-invoke**, **do-inc**, and **do-toggle** use a string DSL (no JSON required) and include inferencing logic — they can figure out the event type, target property, etc. from context, so you can often be less explicit. The intent is arguably more obvious at a glance for their specific use cases.
+- **do-merge** uses JSON syntax and the full power of [assign-gingerly](https://github.com/bahrus/assign-gingerly) operators (`=!` for toggle, `+=` for increment, method calls via `?.classList?.add`, etc.). It's more general-purpose — a single enhancement that can handle toggling, incrementing, method invocation, and arbitrary property assignment in one attribute.
+
+Choose do-merge when you need to combine multiple operations or want the full expressiveness of assign-gingerly. Choose the specialized enhancements like *do-toggle* when brevity and self-documenting intent matter more.
+
 ## Example 1a - Basic Toggle
 
 Toggle a property on the host element (closest itemscope or shadow host):
@@ -55,7 +64,20 @@ What this does:
 2. Toggles the `isHappy` property on the host element (mood-stone)
 3. The property value is inverted: `true` becomes `false`, `false` becomes `true`
 
-## Example 1a with inference
+If you are working in an environment where clashes with other packages can be easily manged, and can make use of scoped custom element registries, use the shorter emoji alternative name shown above, as opposed to the example below.  This package also demonstrates how easy it is to define your own name.
+
+## Example 1a with canonical name (do-toggle)
+
+```html
+<mood-stone itemscope>
+    <div>
+        Is Happy: <span id=display></span>
+    </div>
+    <button do-toggle=isHappy>Toggle Mood</button>
+</mood-stone>
+```
+
+## Example 1a with disabled attribute
 
 Infer the property name from the `name` attribute:
 
@@ -88,10 +110,6 @@ Toggle a property on a specific element using a CSS selector:
 </div>
 ```
 
-The syntax `[selector]?.propertyName` allows you to:
-- `[selector]` - Find an element using a CSS selector
-- `?.propertyName` - Toggle the specified property on that element
-
 **Note:** Use `?.` (chained accessor) instead of `.` because simple periods are used to split multiple statements in the attribute value.
 
 ## Example 1d - Toggle Checkbox
@@ -107,26 +125,7 @@ When toggling an input element without specifying a property, it automatically t
 </div>
 ```
 
-## Example 1e - With xtal-element
 
-Works seamlessly with xtal-element for reactive UI updates:
-
-```html
-<mood-stone itemscope>
-    <div>
-        <span itemprop=isHappy></span>
-    </div>
-    <button ⏻=isHappy>Toggle Mood</button>
-    <xtal-element
-        prop-defaults='{
-            "isHappy": true
-        }'
-        xform='{
-            "| isHappy": 0
-        }'
-    ></xtal-element>
-</mood-stone>
-```
 
 ## Syntax Summary
 
@@ -134,7 +133,7 @@ Works seamlessly with xtal-element for reactive UI updates:
 do-toggle="propertyName"                    // Toggle host property
 do-toggle="propertyName on eventType"       // Toggle on specific event
 do-toggle="[selector]"                      // Toggle inferred property on selected element
-do-toggle="[selector]?.propertyName"        // Toggle specific property on selected element
+do-toggle="#targetElementId?.propertyName"        // Toggle specific property on selected element
 ```
 
 **Important:** Use `?.` (chained accessor) instead of `.` when specifying properties on selected elements, because simple periods are used to split multiple statements.
