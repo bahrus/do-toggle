@@ -24,6 +24,12 @@ const parsePatterns = [
         defaultVals,
     },
     {
+        name: 'idOnly',
+        pattern: String.raw `^#(?<targetSpecifier.targetElementId>[^?\s]+)$`,
+        description: 'Element ID only, infer property and use default event: #{{id}}',
+        defaultVals,
+    },
+    {
         name: 'propOnEventType',
         pattern: String.raw `^(?<hostProp>.*) on (?<localEventType>.*)$`,
         description: 'Prop with explicit event type',

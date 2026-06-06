@@ -26,6 +26,14 @@
                         }
                     },
                     {
+                        "name": "idOnly",
+                        "pattern": "^#(?<targetSpecifier.targetElementId>[^?\\s]+)$",
+                        "description": "Element ID only, infer property and use default event: #{{id}}",
+                        "defaultVals": {
+                            "localEventType": "click"
+                        }
+                    },
+                    {
                         "name": "propOnEventType",
                         "pattern": "^(?<hostProp>.*) on (?<localEventType>.*)$",
                         "description": "Prop with explicit event type",
