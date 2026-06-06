@@ -62,7 +62,7 @@ class DoToggle {
             const name = enhancedElement.getAttribute('name');
             statements.push({
                 value: {
-                    prop: name,
+                    hostProp: name,
                     localEventType: (await infer(enhancedElement)).eventType,
                 }
             });
@@ -89,23 +89,31 @@ class DoToggle {
 
     /**
      * @param {AP & Actions} self 
-     * @param {Event} e 
+     * @param {Event} _e 
      * @param {TogglingParameters} parsedStatement 
      */
-    async handleEvent(self, e, parsedStatement){
+    async handleEvent(self, _e, parsedStatement){
         const { enhancedElement } = self;
-        const {targetSpecifier} = parsedStatement;
-        const {targetElementId, prop} = targetSpecifier;
-        const target = /** @type {any} */ (await ((await import('inferencer/upSearch.js')).upSearch(enhancedElement, targetElementId)));
-        if(prop){
-            target[prop] = !target[prop];
+        const {targetSpecifier, hostProp} = parsedStatement;
+        if(targetSpecifier){
+            const {targetElementId, targetProp} = targetSpecifier;
+            const target = /** @type {any} */ (await ((await import('inferencer/upSearch.js')).upSearch(enhancedElement, targetElementId)));
+            if(targetProp){
+                target[targetProp] = !target[targetProp];
+            }else{
+                const inference = await infer(target);
+                inference.value = !inference.value;
+            }
         }else{
-            const inference = await infer(target);
-            inference.value = !inference.value;
+            // Simple case: toggle hostProp on the nearest ancestor with itemscope
+            const target = /** @type {any} */ (await ((await import('inferencer/upSearch.js')).upSearch(enhancedElement, undefined)));
+            if(hostProp){
+                target[hostProp] = !target[hostProp];
+            }else{
+                const inference = await infer(target);
+                inference.value = !inference.value;
+            }
         }
-
-        
-        
     }
 }
 

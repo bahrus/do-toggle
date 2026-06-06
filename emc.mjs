@@ -13,25 +13,25 @@ const defaultVals = {
 const parsePatterns = [
     {
         name: 'idWithPropAndEvent',
-        pattern: String.raw `^#(?<targetSpecifier.targetElementId>[^?]+)\?\.(?<targetSpecifier.prop>\w+) on (?<localEventType>\w+)$`,
+        pattern: String.raw `^#(?<targetSpecifier.targetElementId>[^?]+)\?\.(?<targetSpecifier.targetProp>\w+) on (?<localEventType>\w+)$`,
         description: 'Element ID with prop and explicit event type: #{{id}}?.prop on event',
         defaultVals,
     },
     {
         name: 'idWithProp',
-        pattern: String.raw `^#(?<targetSpecifier.targetElementId>[^?]+)\?\.(?<targetSpecifier.prop>\w+)$`,
+        pattern: String.raw `^#(?<targetSpecifier.targetElementId>[^?]+)\?\.(?<targetSpecifier.targetProp>\w+)$`,
         description: 'Element ID with prop, default event: #{{id}}?.prop',
         defaultVals,
     },
     {
         name: 'propOnEventType',
-        pattern: String.raw `^(?<prop>.*) on (?<localEventType>.*)$`,
+        pattern: String.raw `^(?<hostProp>.*) on (?<localEventType>.*)$`,
         description: 'Prop with explicit event type',
         defaultVals,
     },
     {
         name: 'prop',
-        pattern: String.raw `^(?<prop>.*)$`,
+        pattern: String.raw `^(?<hostProp>.*)$`,
         description: 'Prop with default event',
         defaultVals,
     }

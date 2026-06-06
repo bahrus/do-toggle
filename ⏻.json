@@ -11,7 +11,7 @@
                 "parserConfig": [
                     {
                         "name": "idWithPropAndEvent",
-                        "pattern": "^#(?<targetSpecifier.targetElementId>[^?]+)\\?\\.(?<targetSpecifier.prop>\\w+) on (?<localEventType>\\w+)$",
+                        "pattern": "^#(?<targetSpecifier.targetElementId>[^?]+)\\?\\.(?<targetSpecifier.targetProp>\\w+) on (?<localEventType>\\w+)$",
                         "description": "Element ID with prop and explicit event type: #{{id}}?.prop on event",
                         "defaultVals": {
                             "localEventType": "click"
@@ -19,7 +19,7 @@
                     },
                     {
                         "name": "idWithProp",
-                        "pattern": "^#(?<targetSpecifier.targetElementId>[^?]+)\\?\\.(?<targetSpecifier.prop>\\w+)$",
+                        "pattern": "^#(?<targetSpecifier.targetElementId>[^?]+)\\?\\.(?<targetSpecifier.targetProp>\\w+)$",
                         "description": "Element ID with prop, default event: #{{id}}?.prop",
                         "defaultVals": {
                             "localEventType": "click"
@@ -27,7 +27,7 @@
                     },
                     {
                         "name": "propOnEventType",
-                        "pattern": "^(?<prop>.*) on (?<localEventType>.*)$",
+                        "pattern": "^(?<hostProp>.*) on (?<localEventType>.*)$",
                         "description": "Prop with explicit event type",
                         "defaultVals": {
                             "localEventType": "click"
@@ -35,7 +35,7 @@
                     },
                     {
                         "name": "prop",
-                        "pattern": "^(?<prop>.*)$",
+                        "pattern": "^(?<hostProp>.*)$",
                         "description": "Prop with default event",
                         "defaultVals": {
                             "localEventType": "click"
