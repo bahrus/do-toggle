@@ -55,7 +55,7 @@ class DoToggle {
         const { parsedStatements, enhancedElement } = self;
         const {success, statements} = parsedStatements;
         if(!success) throw 400;
-        const { nudge } = await import('mount-observer/nudge.js');
+        const { nudge } = await import('assign-gingerly/handlers/nudge.js');
         
         // If no statements, try to infer from name attribute
         if(statements.length === 0){
@@ -97,7 +97,7 @@ class DoToggle {
         const {targetSpecifier, hostProp} = parsedStatement;
         if(targetSpecifier){
             const {targetElementId, targetProp} = targetSpecifier;
-            const target = /** @type {any} */ (await ((await import('inferencer/upSearch.js')).upSearch(enhancedElement, targetElementId)));
+            const target = /** @type {any} */ (await ((await import('assign-gingerly/inferencer/upSearch.js')).upSearch(enhancedElement, targetElementId)));
             if(targetProp){
                 target[targetProp] = !target[targetProp];
             }else{
@@ -106,7 +106,7 @@ class DoToggle {
             }
         }else{
             // Simple case: toggle hostProp on the nearest ancestor with itemscope
-            const target = /** @type {any} */ (await ((await import('inferencer/upSearch.js')).upSearch(enhancedElement, undefined)));
+            const target = /** @type {any} */ (await ((await import('assign-gingerly/inferencer/upSearch.js')).upSearch(enhancedElement, undefined)));
             if(hostProp){
                 target[hostProp] = !target[hostProp];
             }else{
@@ -121,6 +121,6 @@ class DoToggle {
  * 
  * @param {Element & ElementEnhancementGateway} from 
  */
-async function infer(from){return /** @type {Infer} */ (/** @type {any} */ (from.enh.get((await import('inferencer/inferencer.js')).registryItem)));}
+async function infer(from){return /** @type {Infer} */ (/** @type {any} */ (from.enh.get((await import('assign-gingerly/inferencer/inferencer.js')).registryItem)));}
 
 export {DoToggle}

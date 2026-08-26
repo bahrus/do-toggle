@@ -23,16 +23,15 @@
     "update": "ncu -u && npm install"
   },
   "dependencies": {
-    "assign-gingerly": "0.0.51",
-    "be-hive": "0.1.13",
-    "inferencer": "0.0.2",
-    "mount-observer": "0.1.37",
-    "roundabout-lib": "0.0.20",
-    "nested-regex-groups": "0.0.6"
+    "assign-gingerly": "0.0.87",
+    "be-hive": "0.1.18",
+    "mount-observer": "0.1.53",
+    "roundabout-lib": "0.0.36",
+    "nested-regex-groups": "0.0.8"
   },
   "devDependencies": {
     "spa-ssi": "0.0.27",
-    "@playwright/test": "1.60.0",
+    "@playwright/test": "1.62.1",
     "xtal-element": "0.0.637",
     "be-methodical": "0.0.2"
   }
