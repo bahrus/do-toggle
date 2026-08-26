@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Example 1c - Toggle Peer Element</title>
+    <!-- #include virtual="/imports.html" -->
+    <be-hive>
+        <script type=emc-parser 
+                src="be-hive/parsers/parse-pattern-statements.js" 
+                parser-name=parse-pattern-statements></script>
+        <script type=emc 
+                src="do-toggle/⏻.json" 
+                wait-for-parsers=parse-pattern-statements></script>
+    </be-hive>
+    <script type=module>
+        import 'be-hive/be-hive.js';
+        class LightSwitch extends HTMLElement{
+            #isOn;
+            get isOn(){
+                return this.#isOn;
+            }
+            set isOn(nv){
+                this.#isOn = nv;
+                display.textContent = nv ? '💡 ON' : '⚫ OFF';
+            }
+            connectedCallback(){
+                this.isOn = false;
+            }
+        }
+        customElements.define('light-switch', LightSwitch);
+    </script>
+</head>
+<body>
+    <div itemscope>
+        <light-switch id=myLight></light-switch>
+        <div>
+            Light Status: <span id=display></span>
+        </div>
+        <button ⏻="#myLight?.isOn">Toggle Light</button>
+        
+    </div>
+    <div id=target></div>
+    <script>
+        function runTest(){
+            document.querySelector('button').click();
+            setTimeout(() => {
+                const display = document.getElementById('display').textContent;
+                if(display === '💡 ON'){
+                    target.setAttribute('mark', 'good');
+                }
+            }, 500);
+        }
+        setTimeout(() => {
+            runTest();
+        }, 2000);
+    </script>
+</body>
+</html>

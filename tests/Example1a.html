@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Example 1a - Basic Toggle</title>
+    <!-- #include virtual="/imports.html" -->
+
+    <script type=module>
+        import 'be-hive/be-hive.js';
+        class MoodStone extends HTMLElement{
+            #isHappy;
+            get isHappy(){
+                return this.#isHappy;
+            }
+            set isHappy(nv){
+                this.#isHappy = nv;
+                this.querySelector('#display').textContent = nv ? '😊' : '😢'
+            }
+            connectedCallback(){
+                this.isHappy = true;
+            }
+        }
+        customElements.define('mood-stone', MoodStone);
+    </script>
+</head>
+<body>
+    <be-hive>
+        <script type=emc-parser 
+                src="be-hive/parsers/parse-pattern-statements.js" 
+                parser-name=parse-pattern-statements></script>
+        <script type=emc 
+                src="do-toggle/emc.json" 
+                wait-for-parsers=parse-pattern-statements></script>
+    </be-hive>
+    <mood-stone itemscope>
+        <div>
+            Is Happy: <span id=display></span>
+        </div>
+        <button do-toggle=isHappy>Toggle Mood</button>
+    </mood-stone>
+    <div id=target></div>
+    <script>
+        function runTest(){
+            const ms = document.querySelector('mood-stone');
+            ms.querySelector('button').click();
+            setTimeout(() => {
+                const display = ms.querySelector('#display').textContent;
+                if(display === '😢'){
+                    target.setAttribute('mark', 'good');
+                }
+            }, 500);
+        }
+        setTimeout(() => {
+            runTest();
+        }, 2000);
+    </script>
+</body>
+</html>
