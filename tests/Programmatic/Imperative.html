@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programmatic imperative</title>
+    <!-- #include virtual="/imports.html" -->
+</head>
+<body>
+    <mood-stone itemscope>
+        <div>
+            Is happy: <span itemprop=isHappy></span>
+        </div>
+        <light-switch id=myLight></light-switch>
+        <button id=button>Toggle</button>
+    </mood-stone>
+    <div id=target></div>
+    <script type=module>
+        customElements.define('mood-stone', class extends HTMLElement {
+            #isHappy = false;
+            get isHappy(){ return this.#isHappy; }
+            set isHappy(nv){
+                this.#isHappy = nv;
+                this.querySelector('[itemprop="isHappy"]').textContent = nv;
+            }
+        });
+        customElements.define('light-switch', class extends HTMLElement {
+            #isOn = false;
+            get isOn(){ return this.#isOn; }
+            set isOn(nv){
+                this.#isOn = nv;
+                this.textContent = nv ? '💡 ON' : 'OFF';
+            }
+        });
+    </script>
+    <script type=module>
+        import {defDoToggle} from '/def.js';
+        const emc = await defDoToggle(document.body);
+        button.enh.get(emc).toggles = [
+            // equivalent to ⏻="#myLight?.isOn"
+            {prop: 'isOn', targetElementId: 'myLight'},
+            // and the host's isHappy, too -- both toggle on each click
+            'isHappy',
+        ];
+
+        setTimeout(() => {
+            button.click();
+            setTimeout(() => {
+                const ms = document.querySelector('mood-stone');
+                const ls = document.querySelector('light-switch');
+                if(ls.isOn === true && ms.isHappy === true) target.setAttribute('mark', 'good');
+            }, 300);
+        }, 1500);
+    </script>
+</body>
+</html>

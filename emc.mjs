@@ -64,9 +64,16 @@ export const emc = {
         weakRef: {
             properties: ['enhancedElement']
         },
+        // Transfers the attribute-parsed `parsedStatements` into `toggles` —
+        // the property `hydrate` actually reads. Programmatic callers skip
+        // `parsedStatements` entirely and assign `toggles` directly.
+        compacts: {
+            when_parsedStatements_changes_call_onParsedStatementsChange: 0
+        },
         actions: {
             hydrate: {
-                ifAllOf: ['parsedStatements', 'enhancedElement']
+                ifKeyIn: ['toggles', 'initialized'],
+                ifAllOf: ['toggles', 'enhancedElement', 'initialized']
             }
         }
     }

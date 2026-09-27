@@ -59,11 +59,19 @@
                 "enhancedElement"
             ]
         },
+        "compacts": {
+            "when_parsedStatements_changes_call_onParsedStatementsChange": 0
+        },
         "actions": {
             "hydrate": {
+                "ifKeyIn": [
+                    "toggles",
+                    "initialized"
+                ],
                 "ifAllOf": [
-                    "parsedStatements",
-                    "enhancedElement"
+                    "toggles",
+                    "enhancedElement",
+                    "initialized"
                 ]
             }
         }

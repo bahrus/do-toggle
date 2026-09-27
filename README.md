@@ -140,6 +140,63 @@ do-toggle="#targetElementId?.propertyName"        // Toggle specific property on
 
 Or use the emoji shorthand `⏻` instead of `do-toggle`.
 
+## Programmatic attachment (no attribute)
+
+The attribute syntax shown above shines for server-rendered HTML and progressive enhancement:  the markup alone says what gets toggled, and when.  But most web development today renders on the client, with a framework (Lit, React, Vue, Svelte, etc.) that already has a JavaScript reference to each element it creates.  In that setting, attaching do-toggle programmatically is the better fit:
+
+1.  **A less clunky API.**  Frameworks tend to be awkward about setting arbitrary (let alone emoji) attributes, and the syntax has sharp edges -- remembering to write `#myLight?.isOn` rather than `#myLight.isOn`, because a plain period splits statements.  Setting `toggles` to a property name, or to a plain object like `{prop: 'isOn', targetElementId: 'myLight'}`, is ordinary JavaScript, which the framework, your editor, and TypeScript all understand.
+2.  **Less stringifying and parsing.**  With an attribute, the framework serializes each rule to a string, which do-toggle then splits on periods and matches against a series of regular expressions.  Setting `toggles` directly skips both steps.
+3.  **Less overhead monitoring attributes.**  The attribute approach relies on [be-hive](https://github.com/bahrus/be-hive) / [mount-observer](https://github.com/bahrus/mount-observer) watching the DOM for elements that carry (or gain) the attribute, and for changes to its value.  The programmatic approach needs none of that -- `def.js` just registers the enhancement's config, and the enhancement is attached exactly when, and to exactly the elements, your code says.
+
+Both approaches produce the same enhancement, with the same host resolution and property inference, so you can mix them in one app -- attributes for server-rendered islands, programmatic attachment inside client-rendered components.
+
+First register the enhancement's config once:
+
+```JS
+import { defDoToggle } from 'do-toggle/def.js';
+const emc = await defDoToggle(document.body); // or a shadow root's host, for a scoped registry
+```
+
+Then set `toggles`, which accepts:
+
+- a host property name:  `'isHappy'` (equivalent to `⏻=isHappy`);
+- a single object (below);
+- an array of either, mixed freely;
+- an empty array, equivalent to a bare `⏻` attribute (property from the `name` attribute, else inferred).
+
+| Syntax                           | Object                                                    |
+|----------------------------------|-----------------------------------------------------------|
+| `propertyName`                   | `{prop: 'propertyName'}` (or just `'propertyName'`)       |
+| `propertyName on eventType`      | `{prop: 'propertyName', localEventType: 'eventType'}`     |
+| `#targetElementId`               | `{targetElementId: 'targetElementId'}` -- property inferred |
+| `#targetElementId?.propertyName` | `{prop: 'propertyName', targetElementId: 'targetElementId'}` |
+
+`localEventType` defaults to the inferred event (e.g. `click` for a button).
+
+### Declarative -- via `enh.set`
+
+```JS
+// equivalent to <button ⏻=isHappy>
+button.enh.set.doToggle.toggles = 'isHappy';
+```
+
+This can be done before or after `defDoToggle` has been called.
+
+### Imperative -- via `enh.get()`
+
+```JS
+button.enh.get(emc).toggles = [
+    // equivalent to ⏻="#myLight?.isOn"
+    {prop: 'isOn', targetElementId: 'myLight'},
+    // and the host's isHappy, too -- both toggle on each click
+    'isHappy',
+];
+```
+
+Reassigning `toggles` (e.g. when a framework re-renders with new props) replaces the listeners from the previous value rather than adding more.
+
+See [demo/Programmatic](demo/Programmatic/) for runnable examples.
+
 ## Viewing Demos Locally
 
 1. Install git

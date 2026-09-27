@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programmatic declarative out of sequence</title>
+    <!-- #include virtual="/imports.html" -->
+</head>
+<body>
+    <mood-stone itemscope>
+        <div>
+            Is happy: <span itemprop=isHappy></span>
+        </div>
+        <light-switch id=myLight></light-switch>
+        <button id=button name=isHappy>Toggle</button>
+    </mood-stone>
+    <div id=target></div>
+    <script type=module>
+        customElements.define('mood-stone', class extends HTMLElement {
+            #isHappy = false;
+            get isHappy(){ return this.#isHappy; }
+            set isHappy(nv){
+                this.#isHappy = nv;
+                this.querySelector('[itemprop="isHappy"]').textContent = nv;
+            }
+        });
+        customElements.define('light-switch', class extends HTMLElement {
+            #isOn = false;
+            get isOn(){ return this.#isOn; }
+            set isOn(nv){
+                this.#isOn = nv;
+                this.textContent = nv ? '💡 ON' : 'OFF';
+            }
+        });
+    </script>
+    <script type=module>
+        import {defDoToggle} from '/def.js';
+        // set before the config is registered -- the spawn is deferred until defDoToggle runs.
+        // equivalent to <button name=isHappy ⏻> -- property from the name attribute
+        button.enh.set.doToggle.toggles = [];
+        await defDoToggle(document.body);
+
+        setTimeout(() => {
+            button.click();
+            setTimeout(() => {
+                const ms = document.querySelector('mood-stone');
+                const ls = document.querySelector('light-switch');
+                if(ms.isHappy === true) target.setAttribute('mark', 'good');
+            }, 300);
+        }, 1500);
+    </script>
+</body>
+</html>
