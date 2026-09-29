@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programmatic imperative targetElement</title>
+    <!-- #include virtual="/imports.html" -->
+</head>
+<body>
+    <mood-stone itemscope>
+        <div>
+            Is happy: <span itemprop=isHappy></span>
+        </div>
+        <light-switch id=kitchen></light-switch>
+        <light-switch id=porch></light-switch>
+        <button id=button>Toggle</button>
+    </mood-stone>
+    <div id=target></div>
+    <script type=module>
+        customElements.define('mood-stone', class extends HTMLElement {
+            #isHappy = false;
+            get isHappy(){ return this.#isHappy; }
+            set isHappy(nv){
+                this.#isHappy = nv;
+                this.querySelector('[itemprop="isHappy"]').textContent = nv;
+            }
+        });
+        customElements.define('light-switch', class extends HTMLElement {
+            #isOn = false;
+            get isOn(){ return this.#isOn; }
+            set isOn(nv){
+                this.#isOn = nv;
+                this.textContent = nv ? '💡 ON' : 'OFF';
+            }
+        });
+    </script>
+    <script type=module>
+        import {defDoToggle} from '/def.js';
+        const emc = await defDoToggle(document.body);
+        const original = {prop: 'isOn', targetElement: kitchen};
+        const doToggle = button.enh.get(emc);
+        doToggle.toggles = [original, {prop: 'isOn', targetElement: new WeakRef(porch)}, 'isHappy'];
+        setTimeout(() => {
+            button.click();
+            setTimeout(() => {
+                const ms = document.querySelector('mood-stone');
+                const checks = {
+                    kitchenOn: kitchen.isOn === true,
+                    porchOn: porch.isOn === true,
+                    happy: ms.isHappy === true,
+                    // the stored value holds a WeakRef, not the element
+                    storedWeakly: doToggle.toggles[0].targetElement instanceof WeakRef
+                        && doToggle.toggles[0].targetElement.deref() === kitchen,
+                    // the caller's object was copied, not mutated
+                    callerUntouched: original.targetElement === kitchen,
+                };
+                target.dataset.checks = JSON.stringify(checks);
+                if(Object.values(checks).every(Boolean)) target.setAttribute('mark', 'good');
+            }, 300);
+        }, 1500);
+    </script>
+</body>
+</html>

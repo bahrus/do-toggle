@@ -170,8 +170,22 @@ Then set `toggles`, which accepts:
 | `propertyName on eventType`      | `{prop: 'propertyName', localEventType: 'eventType'}`     |
 | `#targetElementId`               | `{targetElementId: 'targetElementId'}` -- property inferred |
 | `#targetElementId?.propertyName` | `{prop: 'propertyName', targetElementId: 'targetElementId'}` |
+| *(no attribute equivalent)*      | `{prop: 'propertyName', targetElement: someElement}` -- see below |
 
 `localEventType` defaults to the inferred event (e.g. `click` for a button).
+
+### Targeting an element directly
+
+Looking a peer up by id isn't always convenient -- the peer may have no id, or live in a different part of the tree, and a framework usually already holds a reference to it.  So instead of `targetElementId`, you can pass `targetElement`:  either the element itself, or a `WeakRef` to it.
+
+```JS
+button.enh.get(emc).toggles = [
+    {prop: 'isOn', targetElement: kitchenLight},              // an element...
+    {prop: 'isOn', targetElement: new WeakRef(porchLight)},   // ...or a WeakRef to one
+];
+```
+
+Either way, do-toggle only ever holds the target **weakly**.  An element is swapped for a `WeakRef` as soon as the enhancement sees it -- including in the stored `toggles` value, which is a copy (your own object isn't modified).  So do-toggle never keeps a removed element alive; if the target is garbage collected, toggling it becomes a no-op.  (Your own code may of course still hold it strongly -- that's up to you.)
 
 ### Declarative -- via `enh.set`
 

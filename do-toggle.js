@@ -79,6 +79,12 @@ class DoToggle {
      */
     async hydrate(self){
         const { toggles, enhancedElement } = self;
+        // A targetElement passed as an element must not be held strongly --
+        // not even via the toggles value roundabout stores on this instance.
+        // Replace it with a weakened copy; that re-triggers hydrate, which
+        // then finds nothing left to weaken and attaches the listeners.
+        const weakened = weakenTargetElements(toggles);
+        if(weakened !== undefined) return /** @type {PAP} */ ({toggles: weakened});
         const { nudge } = await import('assign-gingerly/handlers/nudge.js');
         // Re-hydrating (toggles reassigned) replaces the listeners from the
         // previous pass rather than stacking on them.
@@ -108,8 +114,15 @@ class DoToggle {
         const { enhancedElement } = self;
         const {targetSpecifier, hostProp} = parsedStatement;
         if(targetSpecifier){
-            const {targetElementId, targetProp} = targetSpecifier;
-            const target = /** @type {any} */ (await ((await import('assign-gingerly/inferencer/upSearch.js')).upSearch(enhancedElement, targetElementId)));
+            const {targetElementId, targetElement, targetProp} = targetSpecifier;
+            /** @type {any} */
+            let target;
+            if(targetElement !== undefined){
+                target = targetElement.deref();
+                if(target === undefined) return; // the target has been garbage collected
+            }else{
+                target = await ((await import('assign-gingerly/inferencer/upSearch.js')).upSearch(enhancedElement, targetElementId));
+            }
             if(targetProp){
                 target[targetProp] = !target[targetProp];
             }else{
@@ -130,13 +143,35 @@ class DoToggle {
 }
 
 /**
+ * If any flat rule's `targetElement` is an element (rather than a WeakRef),
+ * return a copy of `toggles` -- same shape -- with each such element wrapped
+ * in a WeakRef.  Otherwise return undefined.  Never mutates `toggles`.
+ * @param {Toggles} toggles
+ * @returns {Toggles | undefined}
+ */
+function weakenTargetElements(toggles){
+    const arr = Array.isArray(toggles) ? toggles : [toggles];
+    let found = false;
+    const weakened = arr.map(item => {
+        if(typeof item === 'object' && item !== null && 'targetElement' in item && item.targetElement instanceof Element){
+            found = true;
+            return {...item, targetElement: new WeakRef(item.targetElement)};
+        }
+        return item;
+    });
+    if(!found) return undefined;
+    return Array.isArray(toggles) ? weakened : weakened[0];
+}
+
+/**
  * Normalize `toggles` into an array of rules in the parsed shape
- * ({hostProp} or {targetSpecifier: {targetElementId, targetProp}}).
+ * ({hostProp} or {targetSpecifier: {targetElementId | targetElement, targetProp}}).
  * Programmatic callers may pass a host property name, a single rule -- flat
- * ({prop, targetElementId, localEventType}) or as parsed from the attribute --
- * or an array mixing these.  A rule naming neither a property nor a target
- * (e.g. from an empty array) takes the property from the name attribute,
- * falling back to inferring it.
+ * ({prop, targetElementId | targetElement, localEventType}) or as parsed from
+ * the attribute -- or an array mixing these.  A rule naming neither a property
+ * nor a target (e.g. from an empty array) takes the property from the name
+ * attribute, falling back to inferring it.
+ * By the time this runs, any targetElement is a WeakRef (see weakenTargetElements).
  * @param {Toggles} toggles
  * @param {Element} enhancedElement
  * @returns {Array<TogglingParameters>}
@@ -147,8 +182,11 @@ function toRules(toggles, enhancedElement){
     return items.map(item => {
         /** @type {any} */
         const t = typeof item === 'string' ? {prop: item} : item;
-        const {prop, targetElementId, localEventType, hostProp, targetSpecifier} = t;
+        const {prop, targetElementId, targetElement, localEventType, hostProp, targetSpecifier} = t;
         if(targetSpecifier !== undefined || hostProp !== undefined) return t; // already the parsed shape
+        if(targetElement !== undefined){
+            return {localEventType, targetSpecifier: {targetElement, targetProp: prop}};
+        }
         if(targetElementId !== undefined){
             return {localEventType, targetSpecifier: {targetElementId, targetProp: prop}};
         }

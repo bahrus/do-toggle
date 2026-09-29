@@ -96,3 +96,117 @@ problems:
 
 `emc.json` / `⏻.json` were regenerated with `npm run build`.
 
+## Bruce's Response Response
+
+One thing I would like to touch across the board, but starting with do-toggle to start with, is when using the programmatic, specifying the target by id:
+
+```JS
+button.enh.get(emc).toggles = [
+    // equivalent to ⏻="#myLight?.isOn"
+    {prop: 'isOn', targetElementId: 'myLight'},
+    // and the host's isHappy, too -- both toggle on each click
+    'isHappy',
+];
+```
+
+isn't always the most convenient approach.  We should also support:
+
+```JS
+button.enh.get(emc).toggles = [
+    // equivalent to ⏻="#myLight?.isOn"
+    {prop: 'isOn', targetElement: myLightElRef},
+    // and the host's isHappy, too -- both toggle on each click
+    'isHappy',
+];
+```
+
+Should we support passing in either an element, or a weak reference to an an element?  Either way, we definitely should not store the target with anything other than a weak reference.
+
+
+
+## Response to Bruce's Response Response
+
+Done for do-toggle.
+
+### Element or WeakRef? Both.
+
+`targetElement` accepts either:
+
+- **An element.** This is the common case, because frameworks usually hold
+  element references, not `WeakRef`s. Making every caller wrap would just be
+  ceremony.
+- **A `WeakRef<Element>`.** This is for callers that already hold one, so they
+  don't have to `deref()` it only for do-toggle to wrap it again.
+
+`targetElement` takes precedence over `targetElementId` if both are given.
+
+### Never stored strongly
+
+Wrapping the element inside the listener's rule object isn't enough. The
+`toggles` value itself is stored on the enhancement instance by roundabout,
+so if `hydrate` only weakened its private copy, the instance would still hold
+the caller's array, and through it the element. So:
+
+- `hydrate` first calls `weakenTargetElements(toggles)`. If any flat rule's
+  `targetElement` is an element, it returns a **copy** of `toggles` (same
+  shape: array or single object) with each such element wrapped in a
+  `WeakRef`. `hydrate` returns that as `{toggles: weakened}`. That replaces
+  the stored value and re-triggers `hydrate`. The second pass finds nothing
+  left to weaken and attaches the listeners. The caller's own object is
+  never mutated.
+- `toRules` maps `{prop, targetElement}` to
+  `{targetSpecifier: {targetElement, targetProp}}`.
+- `handleEvent` calls `deref()`. If the target has been collected, the toggle
+  is a no-op.
+
+The caller's *own* variables may of course still hold the element. That's
+their business, and the README says so.
+
+### Tests
+
+- `tests/Programmatic/ImperativeTargetElement.*` has two lights:
+  `targetElement: kitchen` (an element) and
+  `targetElement: new WeakRef(porch)`, plus `'isHappy'`. One click must:
+  - toggle all three;
+  - leave a `WeakRef` (not the element) in `doToggle.toggles[0].targetElement`;
+  - leave the caller's original object untouched.
+- `tests/Programmatic/ImperativeTargetElementGC.*` proves the weak holding.
+  It runs Chromium with `--js-flags=--expose-gc`, which needs its own worker,
+  hence a separate spec file. The fixture sets up `toggles` inside a function
+  scope, so the page itself keeps no reference. The test then:
+  - takes its own `WeakRef` to the kitchen light;
+  - removes the light from the DOM;
+  - calls `gc()` across a few turns;
+  - asserts the element was collected;
+  - checks that a click afterwards throws nothing and the porch light still
+    toggles.
+
+  As a negative control, I temporarily kept the element strongly (skipped
+  the weakening). The test then fails with "kitchen light was garbage
+  collected, so do-toggle held no strong reference". With the real code it
+  passes (3 of 3 full-suite runs).
+
+All 13 Playwright tests pass. There's a new demo,
+`demo/Programmatic/ImperativeTargetElement.html`. The README has a
+"Targeting an element directly" subsection and a new row in the mapping
+table. `FlatTogglingParameters.targetElement` is typed
+`Element | WeakRef<Element>`, and `targetSpecifier.targetElement` is
+`WeakRef<Element>`. That type change is in the `types` submodule.
+
+### Rolling it out across the board
+
+The same pattern should carry over directly to the other enhancements that
+target a peer by id:
+
+- do-inc (`targetElementId`), do-invoke (`targetElementId`), do-assign
+  (`host`);
+- three-peat (`src`, `target`);
+- be-bound, be-observing and be-calculating (their remote specifiers /
+  `forAttr`).
+
+For the ones where the id is only resolved at event time, it's this same
+small change. be-bound / be-observing / be-calculating resolve their remotes
+once in `hydrate`/`seek`. There, the weak holding matters even more, because
+listeners get attached *to* the remote element. Once you're happy with this
+shape, I'd suggest adding it to the addendum as a step 7, so the checklist
+covers it.
